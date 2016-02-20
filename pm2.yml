@@ -1,0 +1,22 @@
+- name: Install PM2
+  npm: name=pm2 global=yes
+
+- name: Copy PM2 JSON config
+  template: src={{pm2_json_path}} dest=/home/{{username}}/pm2.json
+
+- name: Remove all apps from PM2 manager
+  become_user: "{{username}}"
+  command: pm2 delete all
+  ignore_errors: yes
+
+- name: Create PM2 startup script 2
+  become_user: "{{username}}"
+  command: sudo su -c "env PATH=$PATH:/usr/bin pm2 startup {{username}} -u {{username}} --hp /home/{{username}}"
+
+- name: Start the PM2 apps
+  become_user: "{{username}}"
+  command: pm2 start /home/{{username}}/pm2.json
+
+- name: Save PM2 configuration
+  become_user: "{{username}}"
+  command: pm2 save
