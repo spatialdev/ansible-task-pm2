@@ -4,34 +4,35 @@
 # pm2_json_dest_path - the path to which the PM2 json application config file should be copied to on target host
 # username - username for the target host (e.g., ubuntu, vagrant, etc)
 
-vars:
- pm2_config_apps: {% if pm2_config_apps defined %} {{pm2_config_apps}} {% else % } False {% endif %}
+  - name: pm2_config_apps
+    set_fact:
+      pm2_config_apps: False
+    when: pm2_config_apps is undefined
 
-- name: Install PM2
-  npm: name=pm2 global=yes
+  - name: Install PM2
+    npm: name=pm2 global=yes
 
-- name: Copy PM2 JSON config
-  template: src={{pm2_json_src_path}} dest={{pm2_json_dest_path}}
-  when: pm2_config_apps == True
+  - name: Copy PM2 JSON config
+    template: src={{pm2_json_src_path}} dest={{pm2_json_dest_path}}
+    when: pm2_config_apps == True
 
-- name: Remove all apps from PM2 manager
-  become_user: "{{username}}"
-  command: pm2 delete all
-  when: pm2_config_apps == True
-  ignore_errors: yes
+  - name: Remove all apps from PM2 manager
+    become_user: "{{username}}"
+    command: pm2 delete all
+    when: pm2_config_apps == True
+    ignore_errors: yes
 
+  - name: Create PM2 startup script 2
+    become_user: "{{username}}"
+    command: sudo su -c "env PATH=$PATH:/usr/bin pm2 startup {{username}} -u {{username}} --hp /home/{{username}}"
+    when: pm2_config_apps == True
 
-- name: Create PM2 startup script 2
-  become_user: "{{username}}"
-  command: sudo su -c "env PATH=$PATH:/usr/bin pm2 startup {{username}} -u {{username}} --hp /home/{{username}}"
-  when: pm2_config_apps == True
+  - name: Start the PM2 apps
+    become_user: "{{username}}"
+    command: pm2 start {{pm2_json_dest_path}}
+    when: pm2_config_apps == True
 
-- name: Start the PM2 apps
-  become_user: "{{username}}"
-  command: pm2 start {{pm2_json_dest_path}}
-  when: pm2_config_apps == True
-
-- name: Save PM2 configuration
-  become_user: "{{username}}"
-  command: pm2 save
-  when: pm2_config_apps == True
+  - name: Save PM2 configuration
+    become_user: "{{username}}"
+    command: pm2 save
+    when: pm2_config_apps == True
