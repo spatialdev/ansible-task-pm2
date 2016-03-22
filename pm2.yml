@@ -10,6 +10,7 @@
     when: pm2_config_apps is undefined
 
   - name: Install PM2
+    become_user: root
     npm: name=pm2 global=yes
 
   - name: Copy PM2 JSON config
