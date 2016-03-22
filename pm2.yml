@@ -17,22 +17,19 @@
     when: pm2_config_apps == True
 
   - name: Remove all apps from PM2 manager
-    become_user: "{{username}}"
     command: pm2 delete all
     when: pm2_config_apps == True
     ignore_errors: yes
 
   - name: Create PM2 startup script 2
-    become_user: "{{username}}"
-    command: sudo su -c "env PATH=$PATH:/usr/bin pm2 startup {{username}} -u {{username}} --hp /home/{{username}}"
+    become_user: root
+    command: env PATH=$PATH:/usr/bin pm2 startup {{pm2_username}} -u {{pm2_username}} --hp /home/{{pm2_username}}
     when: pm2_config_apps == True
 
   - name: Start the PM2 apps
-    become_user: "{{username}}"
     command: pm2 start {{pm2_json_dest_path}}
     when: pm2_config_apps == True
 
   - name: Save PM2 configuration
-    become_user: "{{username}}"
     command: pm2 save
     when: pm2_config_apps == True

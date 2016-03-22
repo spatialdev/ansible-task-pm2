@@ -13,4 +13,4 @@ Synopsis of sub-tasks
 **pm2_config_apps** (Boolean) - whether to configure PM2 to manage specific apps. default  
 **pm2_json_src_path** (string) - the path to PM2 json application config file on the Ansible Managment Node  
 **pm2_json_dest_path** (string) - the path to which the PM2 json application config file should be copied to on target host  
-**username** (string) - username for the target host (e.g., ubuntu, vagrant, etc)  
+**pm2_username** (string) - username for that will execute PM2
