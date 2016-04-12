@@ -13,8 +13,13 @@
     become_user: root
     npm: name=pm2 global=yes
 
+  - debug:
+      msg: "{{pm2_json_dest_path}}"
+
   - name: Copy PM2 JSON config
-    template: src={{pm2_json_src_path}} dest={{pm2_json_dest_path}}
+    template:
+      src: "{{pm2_json_src_path}}"
+      dest: "{{pm2_json_dest_path}}"
     when: pm2_config_apps == True
 
   - name: Remove all apps from PM2 manager
